@@ -4,24 +4,7 @@ GtkWidget *entry;
 
 gchar *calculate_result(const gchar *expression);
 
-void button_clicked(GtkWidget *widget, gpointer data) {
-    const gchar *button_label = gtk_button_get_label(GTK_BUTTON(widget));
-
-    if (g_strcmp0(button_label, "=") == 0) {
-        const gchar *expression = gtk_entry_get_text(GTK_ENTRY(entry));
-        gchar *result = calculate_result(expression);
-        gtk_entry_set_text(GTK_ENTRY(entry), result);
-        g_free(result);
-    } else if (g_strcmp0(button_label, "C") == 0) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gchar *current_text = g_strdup(gtk_entry_get_text(GTK_ENTRY(entry)));
-        gchar *new_text = g_strconcat(current_text, button_label, NULL);
-        gtk_entry_set_text(GTK_ENTRY(entry), new_text);
-        g_free(current_text);
-        g_free(new_text);
-    }
-}
+void button_clicked(GtkWidget *widget, gpointer data);
 
 gchar *calculate_result(const gchar *expression) {
     gchar **tokens = g_strsplit_set(expression, " ", -1);
@@ -56,6 +39,25 @@ gchar *calculate_result(const gchar *expression) {
 
     g_strfreev(tokens);
     return g_strdup_printf("%g", result);
+}
+
+void button_clicked(GtkWidget *widget, gpointer data) {
+    const gchar *button_label = gtk_button_get_label(GTK_BUTTON(widget));
+
+    if (g_strcmp0(button_label, "=") == 0) {
+        const gchar *expression = gtk_entry_get_text(GTK_ENTRY(entry));
+        gchar *result = calculate_result(expression);
+        gtk_entry_set_text(GTK_ENTRY(entry), result);
+        g_free(result);
+    } else if (g_strcmp0(button_label, "C") == 0) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gchar *current_text = g_strdup(gtk_entry_get_text(GTK_ENTRY(entry)));
+        gchar *new_text = g_strconcat(current_text, button_label, NULL);
+        gtk_entry_set_text(GTK_ENTRY(entry), new_text);
+        g_free(current_text);
+        g_free(new_text);
+    }
 }
 
 int main(int argc, char *argv[]) {
