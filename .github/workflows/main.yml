@@ -1,0 +1,41 @@
+# Simple workflow for deploying calculator to GitHub Pages
+name: Deploy Calculator to Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["master"]
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # Deploy job
+  deploy:
+    environment:
+      name: calculator-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Compile and Run Calculator
+        run: |
+          sudo apt-get install -y libgtk-3-dev xvfb
+          export DISPLAY=:99.0
+          Xvfb $DISPLAY -screen 0 1024x768x24 > /dev/null 2>&1 &
+          sleep 3
+          gcc calculator.c -o calculator `pkg-config --cflags --libs gtk+-3.0` -lm && ./calculator > output.txt
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
