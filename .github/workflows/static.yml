@@ -41,3 +41,26 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+# Add Travis CI integration
+.travis.yml:
+  language: c
+  dist: xenial
+
+  before_install:
+    - sudo apt-get install -y libgtk-3-dev xvfb
+
+  script:
+    - export DISPLAY=:99.0
+    - Xvfb $DISPLAY -screen 0 1024x768x24 > /dev/null 2>&1 &
+    - sleep 3
+    - gcc calculator.c -o calculator `pkg-config --cflags --libs gtk+-3.0` -lm && ./calculator > output.txt
+  after_success:
+    - mv output.txt $TRAVIS_BUILD_DIR
+  deploy:
+    provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    local_dir: $TRAVIS_BUILD_DIR
+    on:
+      branch: master
