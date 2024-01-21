@@ -1,13 +1,10 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+# Simple workflow for deploying calculator to GitHub Pages
+name: Deploy Calculator to Pages
 
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["master"]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    branches: ["main"]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -15,17 +12,11 @@ permissions:
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  # Single deploy job since we're just deploying
+  # Deploy job
   deploy:
     environment:
-      name: github-pages
+      name: calculator-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
@@ -33,6 +24,13 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v4
+      - name: Compile and Run Calculator
+        run: |
+          sudo apt-get install -y libgtk-3-dev xvfb
+          export DISPLAY=:99.0
+          Xvfb $DISPLAY -screen 0 1024x768x24 > /dev/null 2>&1 &
+          sleep 3
+          gcc calculator.c -o calculator `pkg-config --cflags --libs gtk+-3.0` -lm && ./calculator > output.txt
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -41,26 +39,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-# Add Travis CI integration
-.travis.yml:
-  language: c
-  dist: xenial
-
-  before_install:
-    - sudo apt-get install -y libgtk-3-dev xvfb
-
-  script:
-    - export DISPLAY=:99.0
-    - Xvfb $DISPLAY -screen 0 1024x768x24 > /dev/null 2>&1 &
-    - sleep 3
-    - gcc calculator.c -o calculator `pkg-config --cflags --libs gtk+-3.0` -lm && ./calculator > output.txt
-  after_success:
-    - mv output.txt $TRAVIS_BUILD_DIR
-  deploy:
-    provider: pages
-    skip_cleanup: true
-    github_token: $GITHUB_TOKEN
-    local_dir: $TRAVIS_BUILD_DIR
-    on:
-      branch: master
