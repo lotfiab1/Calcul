@@ -2,6 +2,8 @@
 
 GtkWidget *entry;
 
+gchar *calculate_result(const gchar *expression);
+
 void button_clicked(GtkWidget *widget, gpointer data) {
     const gchar *button_label = gtk_button_get_label(GTK_BUTTON(widget));
 
@@ -22,10 +24,6 @@ void button_clicked(GtkWidget *widget, gpointer data) {
 }
 
 gchar *calculate_result(const gchar *expression) {
-    // You need to implement your own basic arithmetic operations here.
-    // For simplicity, this example assumes expressions like "operand1 operator operand2".
-    // You might want to implement more sophisticated parsing for real-world use cases.
-
     gchar **tokens = g_strsplit_set(expression, " ", -1);
     if (g_strv_length(tokens) != 3) {
         g_strfreev(tokens);
