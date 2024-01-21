@@ -9,3 +9,8 @@ script:
   - Xvfb $DISPLAY -screen 0 1024x768x24 > /dev/null 2>&1 &
   - sleep 3  # Give Xvfb some time to start
   - gcc calculator.c -o calculator `pkg-config --cflags --libs gtk+-3.0` -lm && ./calculator
+
+on:
+  push:
+    branches:
+      - master
