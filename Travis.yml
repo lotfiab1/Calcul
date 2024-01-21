@@ -13,4 +13,4 @@ script:
 on:
   push:
     branches:
-      - master
+      - main
